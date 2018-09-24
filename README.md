@@ -41,11 +41,21 @@ import (
     "github.com/go-flac/go-flac"
 )
 
-func addFLACCover(fileName string, imgData []byte) {
+func extractFLACCover(fileName string) *MetadataBlockPicture {
 	f, err := flac.ParseFile(fileName)
 	if err != nil {
 		panic(err)
 	}
-	for i
+    
+    var pic *MetadataBlockPicture
+	for _, meta := range f.Meta {
+		if meta.Type == flac.Picture {
+			pic, err = ParseFromMetaDataBlock(*meta)
+			if err != nil {
+				panic(err)
+			}
+		}
+    }
+    return pic
 }
 ```
