@@ -2,8 +2,6 @@ package flacpicture
 
 import (
 	"bytes"
-	"errors"
-	"image/jpeg"
 
 	flac "github.com/go-flac/go-flac"
 )
@@ -35,6 +33,7 @@ const (
 	PictureTypePublisherStudioLogotype
 )
 
+// MetadataBlockPicture represents a picture metadata block
 type MetadataBlockPicture struct {
 	PictureType       PictureType
 	MIME              string
@@ -66,26 +65,72 @@ func (c *MetadataBlockPicture) Marshal() flac.MetaDataBlock {
 	}
 }
 
-// NewFromImageData generates a MetadataBlockPicture from image data
+// NewFromImageData generates a MetadataBlockPicture from image data, returns an error if the picture data connot be parsed
 func NewFromImageData(pictype PictureType, description string, imgdata []byte, mime string) (*MetadataBlockPicture, error) {
 	res := new(MetadataBlockPicture)
 	res.PictureType = pictype
 	res.Description = description
 	res.MIME = mime
-	switch mime {
-	case "image/jpeg":
-		img, err := jpeg.Decode(bytes.NewReader(imgdata))
-		if err != nil {
-			return nil, err
-		}
-		res.IndexedColorCount = uint32(0)
-		size := img.Bounds()
-		res.Width = uint32(size.Max.X)
-		res.Height = uint32(size.Max.Y)
-		res.ColorDepth = uint32(8)
-		res.ImageData = imgdata
-		return res, nil
-	default:
-		return nil, errors.New("Unsupported MIME")
+	res.ImageData = imgdata
+	err := res.ParsePicture()
+	return res, err
+}
+
+// ParseFromMetaDataBlock parses an existing picture MetaDataBlock
+func ParseFromMetaDataBlock(meta flac.MetaDataBlock) (*MetadataBlockPicture, error) {
+	if meta.Type != flac.Picture {
+		return nil, ErrorNotPictureMetadataBlock
 	}
+	res := new(MetadataBlockPicture)
+	data := bytes.NewBuffer(meta.Data)
+
+	if pictype, err := readUint32(data); err != nil {
+		return nil, err
+	} else {
+		res.PictureType = PictureType(pictype)
+	}
+
+	if mimebytes, err := readBytesWith32bitSize(data); err != nil {
+		return nil, err
+	} else {
+		res.MIME = string(mimebytes)
+	}
+
+	if descbytes, err := readBytesWith32bitSize(data); err != nil {
+		return nil, err
+	} else {
+		res.Description = string(descbytes)
+	}
+
+	if width, err := readUint32(data); err != nil {
+		return nil, err
+	} else {
+		res.Width = width
+	}
+
+	if height, err := readUint32(data); err != nil {
+		return nil, err
+	} else {
+		res.Height = height
+	}
+
+	if depth, err := readUint32(data); err != nil {
+		return nil, err
+	} else {
+		res.ColorDepth = depth
+	}
+
+	if count, err := readUint32(data); err != nil {
+		return nil, err
+	} else {
+		res.IndexedColorCount = count
+	}
+
+	if pic, err := readBytesWith32bitSize(data); err != nil {
+		return nil, err
+	} else {
+		res.ImageData = pic
+	}
+
+	return res, nil
 }
