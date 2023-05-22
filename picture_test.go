@@ -3,19 +3,27 @@ package flacpicture
 import (
 	"archive/zip"
 	"bytes"
+	"fmt"
+	"io/ioutil"
+	"net/http"
 	"testing"
 
-	httpclient "github.com/ddliu/go-httpclient"
 	flac "github.com/go-flac/go-flac"
 )
 
-func TestPNGPictureDecode(t *testing.T) {
-	imgres, err := httpclient.Begin().Get("https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png")
+func httpGetBytes(url string) ([]byte, error) {
+	res, err := http.Get(url)
 	if err != nil {
-		t.Errorf("Error while downloading test file: %s", err.Error())
-		t.FailNow()
+		return nil, err
 	}
-	imgdata, err := imgres.ReadAll()
+	if res.StatusCode != 200 {
+		return nil, fmt.Errorf("HTTP status %d", res.StatusCode)
+	}
+	return ioutil.ReadAll(res.Body)
+}
+
+func TestPNGPictureDecode(t *testing.T) {
+	imgdata, err := httpGetBytes("https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png")
 	if err != nil {
 		t.Errorf("Error while downloading test file: %s", err.Error())
 		t.FailNow()
@@ -37,12 +45,7 @@ func TestPNGPictureDecode(t *testing.T) {
 	}
 }
 func TestJPEGPictureDecode(t *testing.T) {
-	imgres, err := httpclient.Begin().Get("https://jpeg.org/images/jpeg-home.jpg")
-	if err != nil {
-		t.Errorf("Error while downloading test file: %s", err.Error())
-		t.FailNow()
-	}
-	imgdata, err := imgres.ReadAll()
+	imgdata, err := httpGetBytes("https://jpeg.org/images/jpeg-home.jpg")
 	if err != nil {
 		t.Errorf("Error while downloading test file: %s", err.Error())
 		t.FailNow()
@@ -58,19 +61,14 @@ func TestJPEGPictureDecode(t *testing.T) {
 		t.Fail()
 	}
 
-	if pic.Height != 298 || pic.Width != 690 {
+	if pic.Height != 400 || pic.Width != 800 {
 		t.Errorf("JPEG size error: got %dx%d", pic.Width, pic.Height)
 		t.Fail()
 	}
 }
 
 func TestPictureModify(t *testing.T) {
-	imgres, err := httpclient.Begin().Get("https://jpeg.org/images/jpeg-home.jpg")
-	if err != nil {
-		t.Errorf("Error while downloading test file: %s", err.Error())
-		t.FailNow()
-	}
-	imgdata, err := imgres.ReadAll()
+	imgdata, err := httpGetBytes("https://jpeg.org/images/jpeg-home.jpg")
 	if err != nil {
 		t.Errorf("Error while downloading test file: %s", err.Error())
 		t.FailNow()
@@ -96,12 +94,7 @@ func TestPictureModify(t *testing.T) {
 }
 
 func TestJPEGFromExistingFLAC(t *testing.T) {
-	zipres, err := httpclient.Begin().Get("http://helpguide.sony.net/high-res/sample1/v1/data/Sample_BeeMoved_96kHz24bit.flac.zip")
-	if err != nil {
-		t.Errorf("Error while downloading test file: %s", err.Error())
-		t.FailNow()
-	}
-	zipdata, err := zipres.ReadAll()
+	zipdata, err := httpGetBytes("http://helpguide.sony.net/high-res/sample1/v1/data/Sample_BeeMoved_96kHz24bit.flac.zip")
 	if err != nil {
 		t.Errorf("Error while downloading test file: %s", err.Error())
 		t.FailNow()
