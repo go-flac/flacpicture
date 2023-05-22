@@ -1,0 +1,4 @@
+github.com/ddliu/go-httpclient v0.7.1 h1:COWYBalfbaFNe6e0eQU38++vCD5kzLh1H1RFs3xcn9g=
+github.com/ddliu/go-httpclient v0.7.1/go.mod h1:uwipe9x9SYGk4JhBemO7+dD87QbiY224y0DLB9OY0Ik=
+github.com/go-flac/go-flac v1.0.0 h1:6qI9XOVLcO50xpzm3nXvO31BgDgHhnr/p/rER/K/doY=
+github.com/go-flac/go-flac v1.0.0/go.mod h1:WnZhcpmq4u1UdZMNn9LYSoASpWOCMOoxXxcWEHSzkW8=
