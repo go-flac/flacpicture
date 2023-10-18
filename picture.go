@@ -45,7 +45,7 @@ type MetadataBlockPicture struct {
 	ImageData         []byte
 }
 
-// Marshal encodes the PictureBlock to a standard FLAC MetaDataBloc to be accepted by go-flac
+// Marshal encodes the PictureBlock to a standard FLAC MetaDataBlock to be accepted by go-flac
 func (c *MetadataBlockPicture) Marshal() flac.MetaDataBlock {
 	res := bytes.NewBuffer([]byte{})
 	res.Write(encodeUint32(uint32(c.PictureType)))
