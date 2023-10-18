@@ -6,7 +6,7 @@ import (
 	"image/png"
 )
 
-// ParsePicture decodes the image and inflated the Width, Height, ColorDepth, IndexedColorCount fields. This is called automatically by NewFromImageData
+// ParsePicture decodes the image and inflates the Width, Height, ColorDepth, IndexedColorCount fields. This is called automatically by NewFromImageData
 func (c *MetadataBlockPicture) ParsePicture() error {
 	switch c.MIME {
 	case "image/jpeg":
