@@ -1,6 +1,6 @@
 # flacpicture
 
-[![Documentation](https://godoc.org/github.com/go-flac/flacpicture?status.svg)](https://godoc.org/github.com/go-flac/flacpicture)
+[![Documentation](https://godoc.org/github.com/go-flac/flacpicture?status.svg)](https://godoc.org/github.com/go-flac/flacpicture/v2)
 [![Build Status](https://travis-ci.org/go-flac/flacpicture.svg?branch=master)](https://travis-ci.org/go-flac/flacpicture)
 [![Coverage Status](https://coveralls.io/repos/github/go-flac/flacpicture/badge.svg?branch=master)](https://coveralls.io/github/go-flac/flacpicture?branch=master)
 
@@ -14,8 +14,8 @@ The following example adds a jpeg image as front cover to the FLAC metadata.
 package example
 
 import (
-    "github.com/go-flac/flacpicture"
-    "github.com/go-flac/go-flac"
+    "github.com/go-flac/flacpicture/v2"
+    "github.com/go-flac/go-flac/v2"
 )
 
 func addFLACCover(fileName string, imgData []byte) {
@@ -38,8 +38,8 @@ The following example extracts an existing cover from a FLAC file
 package example
 
 import (
-    "github.com/go-flac/flacpicture"
-    "github.com/go-flac/go-flac"
+    "github.com/go-flac/flacpicture/v2"
+    "github.com/go-flac/go-flac/v2"
 )
 
 func extractFLACCover(fileName string) *flacpicure.MetadataBlockPicture {
